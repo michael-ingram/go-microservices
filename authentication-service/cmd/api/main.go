@@ -24,21 +24,22 @@ type Config struct {
 }
 
 func main() {
-	log.Println("Starting Authentication Service")
+	log.Println("Starting authentication service")
 
+	// connect to DB
 	conn := connectToDB()
 	if conn == nil {
-		log.Panic("Can't connect to postgres")
+		log.Panic("Can't connect to Postgres!")
 	}
 
-	//	set up config
+	// set up config
 	app := Config{
 		DB:     conn,
 		Models: data.New(conn),
 	}
 
 	srv := &http.Server{
-		Addr:    fmt.Sprint(":%s", webPort),
+		Addr:    fmt.Sprintf(":%s", webPort),
 		Handler: app.routes(),
 	}
 
@@ -46,7 +47,6 @@ func main() {
 	if err != nil {
 		log.Panic(err)
 	}
-
 }
 
 func openDB(dsn string) (*sql.DB, error) {
@@ -65,13 +65,14 @@ func openDB(dsn string) (*sql.DB, error) {
 
 func connectToDB() *sql.DB {
 	dsn := os.Getenv("DSN")
+
 	for {
 		connection, err := openDB(dsn)
 		if err != nil {
-			log.Println("Postgres not yet ready...")
+			log.Println("Postgres not yet ready ...")
 			counts++
 		} else {
-			log.Println("Connected to postgres")
+			log.Println("Connected to Postgres!")
 			return connection
 		}
 
@@ -79,7 +80,8 @@ func connectToDB() *sql.DB {
 			log.Println(err)
 			return nil
 		}
-		log.Println("Backing off for 2 secs");
+
+		log.Println("Backing off for two seconds....")
 		time.Sleep(2 * time.Second)
 		continue
 	}
